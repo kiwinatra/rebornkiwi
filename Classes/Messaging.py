@@ -1,5 +1,6 @@
 import traceback
 
+from Classes.Logger import Logger
 from Classes.ByteStream import ByteStream
 
 
@@ -26,5 +27,6 @@ class Messaging:
         message.messageBuffer += message.messagePayload
         try:
             fields["Socket"].send(message.messageBuffer)
+            Logger.packet("out", messageType, LogicLaserMessageFactory.getMessageName(messageType), len(message.messageBuffer))
         except Exception:
-            print(traceback.format_exc())
+            Logger.error("NET", traceback.format_exc())

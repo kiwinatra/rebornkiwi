@@ -1,8 +1,11 @@
+from Classes.Logger import Logger
+
+
 class Debugger:
     @staticmethod
     def error(message):
-        print("[ERROR]", message)
+        Logger.error("DBG", message)
 
     @staticmethod
     def warning(message):
-        print("[WARNING]", message)
+        Logger.warn("DBG", message)

@@ -2,6 +2,8 @@ import json
 import sqlite3
 import traceback
 from Classes.Files.Classes.Regions import Regions
+from Classes.Logger import Logger
+
 
 class DatabaseHandler():
     def __init__(self):
@@ -12,14 +14,15 @@ class DatabaseHandler():
         except sqlite3.OperationalError:
             pass
         except Exception:
-            print(traceback.format_exc())
+            Logger.error("DB", traceback.format_exc())
 
     def createAccount(self, data):
         try:
             self.cursor.execute("INSERT INTO main (ID, Token, Data) VALUES (?, ?, ?)", (data["ID"][1], data["Token"], json.dumps(data, ensure_ascii=0)))
             self.conn.commit()
+            Logger.info("DB", f"Account created {data['ID'][0]}-{data['ID'][1]}")
         except Exception:
-            print(traceback.format_exc())
+            Logger.error("DB", traceback.format_exc())
 
     def getAll(self):
         self.playersId = []
@@ -30,14 +33,14 @@ class DatabaseHandler():
                 self.playersId.append(self.db[i][0])
             return self.playersId
         except Exception:
-            print(traceback.format_exc())
+            Logger.error("DB", traceback.format_exc())
 
     def getPlayer(self, plrId):
         try:
             self.cursor.execute("SELECT * from main where ID=?", (plrId[1],))
             return json.loads(self.cursor.fetchall()[0][2])
         except Exception:
-            print(traceback.format_exc())
+            Logger.error("DB", traceback.format_exc())
 
     def getPlayerEntry(self, plrId):
         try:
@@ -46,7 +49,7 @@ class DatabaseHandler():
         except IndexError:
             pass
         except Exception:
-            print(traceback.format_exc())
+            Logger.error("DB", traceback.format_exc())
 
     def loadAccount(self, player, plrId):
         try:
@@ -76,8 +79,9 @@ class DatabaseHandler():
             player.OwnedPins = playerData["OwnedPins"]
             player.OwnedThumbnails = playerData["OwnedThumbnails"]
             player.OwnedBrawlers = playerData["OwnedBrawlers"]
+            Logger.debug("DB", f"Loaded account {plrId[0]}-{plrId[1]}")
         except Exception:
-            print(traceback.format_exc())
+            Logger.error("DB", traceback.format_exc())
 
     def updatePlayerData(self, data, calling_instance):
         try:
@@ -85,7 +89,7 @@ class DatabaseHandler():
             self.conn.commit()
             self.loadAccount(calling_instance.player, calling_instance.player.ID)
         except Exception:
-            print(traceback.format_exc())
+            Logger.error("DB", traceback.format_exc())
 
     def playerExist(self, loginToken, loginID):
         try:
@@ -95,7 +99,8 @@ class DatabaseHandler():
                 return True
             return False
         except Exception:
-            print(traceback.format_exc())
+            Logger.error("DB", traceback.format_exc())
+
 
 class ClubDatabaseHandler:
     def __init__(self):
@@ -103,7 +108,7 @@ class ClubDatabaseHandler:
         self.cursor = self.conn.cursor()
         try:
             self.cursor.execute("""CREATE TABLE main (LowID integer, Data json)""")
-        except:
+        except Exception:
             pass
 
     def createClub(self, lowID, data):
@@ -111,16 +116,17 @@ class ClubDatabaseHandler:
             self.cursor.execute("INSERT INTO main (LowID, Data) VALUES (?, ?)",
                                 (lowID, json.dumps(data, ensure_ascii=0)))
             self.conn.commit()
+            Logger.info("DB", f"Club created {lowID}")
         except Exception as e:
-            print(e)
+            Logger.error("DB", str(e))
 
     def deleteClub(self, lowID):
         try:
             self.cursor.execute("DELETE FROM main where LowID=?", (lowID,))
             self.conn.commit()
+            Logger.info("DB", f"Club deleted {lowID}")
         except Exception as e:
-            print(e)
-
+            Logger.error("DB", str(e))
 
     def getAllClub(self):
         clubs = []
@@ -131,7 +137,7 @@ class ClubDatabaseHandler:
                 clubs.append(json.loads(self.db[i][1]))
             return clubs
         except Exception as e:
-            print(e)
+            Logger.error("DB", str(e))
 
     def getAllClubByRegion(self, regionID):
         clubs = []
@@ -143,8 +149,8 @@ class ClubDatabaseHandler:
                 if dataLoaded['RegionID'] == Regions.getIDByRegion(self, regionID):
                     clubs.append(dataLoaded)
             return clubs
-        except Exception as e:
-            print(traceback.format_exc())
+        except Exception:
+            Logger.error("DB", traceback.format_exc())
 
     def getDefaultMembersData(self, player, role):
         return {'HighID': player.HighID, 'LowID': player.LowID, 'Name': player.Name, 'Role': role, 'Trophies': player.trophies, 'NameColor': player.nameColor, 'Thumbnail': player.thumbnail}
@@ -157,19 +163,19 @@ class ClubDatabaseHandler:
             self.cursor.execute("SELECT * from main where LowID=?", (low,))
             return self.cursor.fetchall()
         except Exception as e:
-            print(e)
+            Logger.error("DB", str(e))
 
     def getMembersSorted(self, clubdata):
         try:
             return sorted(clubdata['Members'].items(), key = lambda x: x[1]['Trophies'], reverse=True)
         except Exception as e:
-            print(e)
+            Logger.error("DB", str(e))
 
     def getMemberWithLowID(self, clubData, playerLowID):
         try:
             return clubData["Members"][str(playerLowID)]
         except Exception as e:
-            print(e)
+            Logger.error("DB", str(e))
 
     def getTotalTrophies(self, clubData):
         try:
@@ -178,7 +184,7 @@ class ClubDatabaseHandler:
                 totalTrophies += i['Trophies']
             return totalTrophies
         except Exception as e:
-            print(e)
+            Logger.error("DB", str(e))
 
     def LoadAccount(self, low, player):
         try:
@@ -187,11 +193,11 @@ class ClubDatabaseHandler:
             self.players = self.cursor.fetchall()
             self.players = json.loads(self.players[0][2])
         except Exception as e:
-            print(e)
+            Logger.error("DB", str(e))
 
     def updateClubData(self, data, lowID):
         try:
             self.cursor.execute("UPDATE main SET Data=? WHERE LowID=?", (json.dumps(data, ensure_ascii=0), lowID))
             self.conn.commit()
         except Exception as e:
-            print(e)
+            Logger.error("DB", str(e))

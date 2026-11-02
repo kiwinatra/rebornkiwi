@@ -1,6 +1,7 @@
 import traceback
 
 import Configuration
+from Classes.Logger import Logger
 from Classes.Logic.LogicLaserMessageFactory import LogicLaserMessageFactory
 from Classes.Messaging import Messaging
 
@@ -18,7 +19,7 @@ class MessageManager:
                         message.execute(self, message.fields)
 
             except Exception:
-                print(traceback.format_exc())
-        
+                Logger.error("PKT", traceback.format_exc())
+
         if Configuration.settings["Proxy"] == False:
             Messaging.sendMessage(23457, {"Socket": self.client}, self.player)

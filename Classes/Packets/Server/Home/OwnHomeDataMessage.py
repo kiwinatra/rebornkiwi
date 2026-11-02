@@ -4,6 +4,7 @@ from Classes.ByteStreamHelper import ByteStreamHelper
 from Classes.Packets.PiranhaMessage import PiranhaMessage
 from Static.StaticData import StaticData
 
+
 class OwnHomeDataMessage(PiranhaMessage):
     def __init__(self, messageData):
         super().__init__(messageData)
@@ -26,34 +27,30 @@ class OwnHomeDataMessage(PiranhaMessage):
 
         self.writeVInt(0)
         self.writeVInt(0)
-        self.writeVInt(player.Trophies) # Trophies
-        self.writeVInt(player.HighestTrophies) # Highest Trophies
+        self.writeVInt(player.Trophies)
+        self.writeVInt(player.HighestTrophies)
         self.writeVInt(player.HighestTrophies)
         self.writeVInt(player.TrophyRoadTier)
-        self.writeVInt(player.Experience) # Experience
-        self.writeDataReference(28, player.Thumbnail) # Thumbnail
-        self.writeDataReference(43, player.Namecolor) # Namecolor
+        self.writeVInt(player.Experience)
+        self.writeDataReference(28, player.Thumbnail)
+        self.writeDataReference(43, player.Namecolor)
 
         self.writeVInt(0)
 
-        self.writeVInt(0) # Selected Skins
+        self.writeVInt(0)
 
-        self.writeVInt(0) # Randomizer Skin Selected
+        self.writeVInt(0)
 
-        self.writeVInt(0) # Current Random Skin
+        self.writeVInt(0)
 
-        #self.writeVInt(len(ownedSkins))
         self.writeVInt(800)
-
-        #for skinID in ownedSkins:
-        #    self.writeDataReference(29, skinID)
 
         for i in range(800):
             self.writeDataReference(29, i)
 
-        self.writeVInt(0) # Unlocked Skin Purchase Option
+        self.writeVInt(0)
 
-        self.writeVInt(0) # New Item State
+        self.writeVInt(0)
 
         self.writeVInt(0)
         self.writeVInt(player.HighestTrophies)
@@ -76,61 +73,24 @@ class OwnHomeDataMessage(PiranhaMessage):
         self.writeVInt(999)
         self.writeVInt(999)
 
-        self.writeBoolean(False) # Offer 1
-        self.writeBoolean(False) # Offer 2
-        self.writeBoolean(True) # Token Doubler Enabled
-        self.writeVInt(2)  # Token Doubler New Tag State
-        self.writeVInt(2)  # Event Tickets New Tag State
-        self.writeVInt(2)  # Coin Packs New Tag State
-        self.writeVInt(0)  # Change Name Cost
-        self.writeVInt(0)  # Timer For the Next Name Change
-
-        '''
-        0: FREE BOX
-        1: COINS
-        2: RANDOM BRAWLER RARITY
-        3: BRAWLER
-        4: SKIN
-        5: ?
-        6: BRAWL BOX
-        7: TICKETS
-        8: POWER POINTS
-        9: TOKEN DOUBLER
-        10: MEGA BOX
-        11: ?
-        12: POWER POINTS
-        13: NEW EVENT SLOT
-        14: BIG BOX
-        15: BRAWL BOX
-        16: GEMS
-        17: STAR POINTS
-        18: QUEST???
-        19: PIN
-        20: SET OF PINS
-        21: PIN PACK
-        22: PIN PACK FOR
-        23: PIN OF RARITY
-        24: ?
-        25: ?
-        26: ?
-        27: PIN PACK OF RARITY
-        28: ?
-        29: ?
-        30: NEW BRAWLER UPGRADED TO LEVEL
-        31: RANDOM BRAWLER OF RARITY UPGRADED TO LEVEL
-        32: GEAR TOKENS
-        33: SCRAP
-        '''
+        self.writeBoolean(False)
+        self.writeBoolean(False)
+        self.writeBoolean(True)
+        self.writeVInt(2)
+        self.writeVInt(2)
+        self.writeVInt(2)
+        self.writeVInt(0)
+        self.writeVInt(0)
 
         ShopData = StaticData.ShopData
 
-        self.writeVInt(1 + len(ShopData["Offers"])) # Offers count
+        self.writeVInt(1 + len(ShopData["Offers"]))
 
-        self.writeVInt(1)  # RewardCount
+        self.writeVInt(1)
         for i in range(1):
-            self.writeVInt(3) # ItemType
+            self.writeVInt(3)
             self.writeVInt(0)
-            self.writeDataReference(16, 67) # CsvID
+            self.writeDataReference(16, 67)
             self.writeVInt(0)
 
         self.writeVInt(0)
@@ -158,12 +118,12 @@ class OwnHomeDataMessage(PiranhaMessage):
         self.writeDataReference(0)
 
         for i in ShopData["Offers"]:
-            self.writeVInt(i["RewardsCount"])  # RewardCount
+            self.writeVInt(i["RewardsCount"])
             for reward in i["Rewards"]:
-                self.writeVInt(reward["ItemType"]) # ItemType
+                self.writeVInt(reward["ItemType"])
                 self.writeVInt(reward["Amount"])
                 if reward["CsvID1"] != 0:
-                    self.writeDataReference(reward["CsvID1"], reward["CsvID2"]) # CsvID
+                    self.writeDataReference(reward["CsvID1"], reward["CsvID2"])
                 else:
                     self.writeDataReference(0)
                 self.writeVInt(reward["SkinID"])
@@ -171,10 +131,10 @@ class OwnHomeDataMessage(PiranhaMessage):
             self.writeVInt(i["Currency"])
             self.writeVInt(i["Cost"])
             self.writeVInt(i["Time"])
-            self.writeVInt(0) # ?
+            self.writeVInt(0)
             self.writeVInt(0)
             self.writeBoolean(i["Claim"])
-            self.writeVInt(0) # ?
+            self.writeVInt(0)
             self.writeVInt(0)
             self.writeBoolean(i["DailyOffer"])
             self.writeVInt(i["OldPrice"])
@@ -214,30 +174,30 @@ class OwnHomeDataMessage(PiranhaMessage):
         self.writeString(player.ContentCreator)
 
         self.writeVInt(20)
-        self.writeLong(2, 1)  # Unknown
-        self.writeLong(3, 0)  # Tokens Gained
-        self.writeLong(4, 0)  # Trophies Gained
-        self.writeLong(6, 0)  # Demo Account
-        self.writeLong(7, 0)  # Invites Blocked
-        self.writeLong(8, 0)  # Star Points Gained
-        self.writeLong(9, 0)  # Show Star Points
-        self.writeLong(10, 0)  # Power Play Trophies Gained
-        self.writeLong(12, 1)  # Unknown
-        self.writeLong(14, 0)  # Coins Gained
-        self.writeLong(15, 0)  # AgeScreen | 3 = underage (disable social media) | 1 = age popup
+        self.writeLong(2, 1)
+        self.writeLong(3, 0)
+        self.writeLong(4, 0)
+        self.writeLong(6, 0)
+        self.writeLong(7, 0)
+        self.writeLong(8, 0)
+        self.writeLong(9, 0)
+        self.writeLong(10, 0)
+        self.writeLong(12, 1)
+        self.writeLong(14, 0)
+        self.writeLong(15, 0)
         self.writeLong(16, 1)
-        self.writeLong(17, 0)  # Team Chat Muted
-        self.writeLong(18, 0)  # Esport Button
-        self.writeLong(19, 0)  # Champion Ship Lives Buy Popup
-        self.writeLong(20, 0)  # Gems Gained
-        self.writeLong(21, 0)  # Looking For Team State
+        self.writeLong(17, 0)
+        self.writeLong(18, 0)
+        self.writeLong(19, 0)
+        self.writeLong(20, 0)
+        self.writeLong(21, 0)
         self.writeLong(22, 1)
-        self.writeLong(23, 0)  # Club Trophies Gained
-        self.writeLong(24, 1)  # Have already watched club league stupid animation
+        self.writeLong(23, 0)
+        self.writeLong(24, 1)
 
         self.writeVInt(0)
 
-        self.writeVInt(2)  # Brawlpass
+        self.writeVInt(2)
         for i in range(11, 13):
             self.writeVInt(13)
             self.writeVInt(34500)
@@ -265,7 +225,7 @@ class OwnHomeDataMessage(PiranhaMessage):
         self.writeVInt(0)
 
         self.writeBoolean(True)
-        self.writeVInt(ownedPinsCount + ownedThumbnailCount)  # Vanity Count
+        self.writeVInt(ownedPinsCount + ownedThumbnailCount)
         for i in player.OwnedPins:
             self.writeDataReference(52, i)
             self.writeVInt(1)
@@ -286,7 +246,7 @@ class OwnHomeDataMessage(PiranhaMessage):
 
         self.writeVInt(0)
 
-        self.writeVInt(25) # Count
+        self.writeVInt(25)
 
         self.writeVInt(1)
         self.writeVInt(2)
@@ -314,10 +274,10 @@ class OwnHomeDataMessage(PiranhaMessage):
         self.writeVInt(31)
         self.writeVInt(32)
 
-        self.writeVInt(3) # Events
+        self.writeVInt(4) # Events
 
         eventIndex = 1
-        for i in [5, 115, 568]:
+        for i in [5, 115, 568, 25]:
             self.writeVInt(-1)
             self.writeVInt(eventIndex)  # EventType
             self.writeVInt(0)  # EventsBeginCountdown
@@ -366,7 +326,6 @@ class OwnHomeDataMessage(PiranhaMessage):
         self.writeLong(66, 1)
         self.writeLong(61, 36270)  # SupportDisabled State | if 36218 < state its true
         self.writeLong(47, 41381)
-        #self.writeLong(29, 0)  # Skin Group Active For Campaign
         self.writeLong(48, 41381)
         self.writeLong(50, 0)  # Coming up quests placeholder
         self.writeLong(1100, 500)
@@ -506,51 +465,7 @@ class OwnHomeDataMessage(PiranhaMessage):
         self.writeVInt(0)
 
     def decode(self):
-        fields = {}
-        # fields["AccountID"] = self.readLong()
-        # fields["HomeID"] = self.readLong()
-        # fields["PassToken"] = self.readString()
-        # fields["FacebookID"] = self.readString()
-        # fields["GamecenterID"] = self.readString()
-        # fields["ServerMajorVersion"] = self.readInt()
-        # fields["ContentVersion"] = self.readInt()
-        # fields["ServerBuild"] = self.readInt()
-        # fields["ServerEnvironment"] = self.readString()
-        # fields["SessionCount"] = self.readInt()
-        # fields["PlayTimeSeconds"] = self.readInt()
-        # fields["DaysSinceStartedPlaying"] = self.readInt()
-        # fields["FacebookAppID"] = self.readString()
-        # fields["ServerTime"] = self.readString()
-        # fields["AccountCreatedDate"] = self.readString()
-        # fields["StartupCooldownSeconds"] = self.readInt()
-        # fields["GoogleServiceID"] = self.readString()
-        # fields["LoginCountry"] = self.readString()
-        # fields["KunlunID"] = self.readString()
-        # fields["Tier"] = self.readInt()
-        # fields["TencentID"] = self.readString()
-        #
-        # ContentUrlCount = self.readInt()
-        # fields["GameAssetsUrls"] = []
-        # for i in range(ContentUrlCount):
-        #     fields["GameAssetsUrls"].append(self.readString())
-        #
-        # EventUrlCount = self.readInt()
-        # fields["EventAssetsUrls"] = []
-        # for i in range(EventUrlCount):
-        #     fields["EventAssetsUrls"].append(self.readString())
-        #
-        # fields["SecondsUntilAccountDeletion"] = self.readVInt()
-        # fields["SupercellIDToken"] = self.readCompressedString()
-        # fields["IsSupercellIDLogoutAllDevicesAllowed"] = self.readBoolean()
-        # fields["isSupercellIDEligible"] = self.readBoolean()
-        # fields["LineID"] = self.readString()
-        # fields["SessionID"] = self.readString()
-        # fields["KakaoID"] = self.readString()
-        # fields["UpdateURL"] = self.readString()
-        # fields["YoozooPayNotifyUrl"] = self.readString()
-        # fields["UnbotifyEnabled"] = self.readBoolean()
-        # super().decode(fields)
-        return fields
+        return {}
 
     def execute(message, calling_instance, fields):
         pass

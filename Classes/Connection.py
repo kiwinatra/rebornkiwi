@@ -6,6 +6,7 @@ import traceback
 import Configuration
 from Classes.ClientsManager import ClientsManager
 from Classes.Instances.Classes.Player import Player
+from Classes.Logger import Logger
 from Classes.MessageManager import MessageManager
 from Classes.Messaging import Messaging
 from Classes.Utility import Utility
@@ -37,13 +38,14 @@ class Connection(threading.Thread):
                     headerData = Messaging.readHeader(messageHeader)
                     self.timeout = time.time()
                     packetPayload = Connection.recv(self, headerData[1])
-                    # print("Received", headerData[0], LogicLaserMessageFactory.getMessageName(headerData[0]), "length", headerData[1], "data", packetPayload, '\n')
                     if Configuration.settings["DumpPacket"] == True:
                         Utility.dumpPacket(packetPayload, headerData[0])
+                    from Classes.Logic.LogicLaserMessageFactory import LogicLaserMessageFactory
+                    Logger.packet("in", headerData[0], LogicLaserMessageFactory.getMessageName(headerData[0]), headerData[1])
                     MessageManager.receiveMessage(self, headerData[0], packetPayload)
 
                 if time.time() - self.timeout > 7:
-                    print(f"Client with ip: {self.address} disconnected!")
+                    Logger.info("NET", f"Client {self.address[0]}:{self.address[1]} disconnected (timeout)")
                     allSockets = ClientsManager.GetAll()
                     if self.player.ID[1] in allSockets.keys() and allSockets[self.player.ID[1]]["Socket"] == self.client:
                         ClientsManager.RemovePlayer(self.player.ID)
@@ -51,11 +53,11 @@ class Connection(threading.Thread):
                     break
 
         except ConnectionError:
-            print(f"Client with ip: {self.address} disconnected!")
+            Logger.info("NET", f"Client {self.address[0]}:{self.address[1]} disconnected")
             allSockets = ClientsManager.GetAll()
             if self.player.ID[1] in allSockets.keys() and allSockets[self.player.ID[1]]["Socket"] == self.client:
                 ClientsManager.RemovePlayer(self.player.ID)
             self.client.close()
 
         except Exception:
-            print(traceback.format_exc())
+            Logger.error("NET", traceback.format_exc())

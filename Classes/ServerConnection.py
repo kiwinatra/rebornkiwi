@@ -2,6 +2,7 @@ import socket
 
 import Configuration
 from Classes.Connection import Connection
+from Classes.Logger import Logger
 
 
 class ServerConnection:
@@ -14,9 +15,9 @@ class ServerConnection:
 
     def setupConnection(self, address):
         self.server.bind(address)
-        print("Listening for new connection...")
+        Logger.info("NET", f"Listening on {address[0]}:{address[1]}")
         while True:
             self.server.listen()
             socket, address = self.server.accept()
-            print("New connection with address", address[0], "on port", address[1])
+            Logger.info("NET", f"Client connected {address[0]}:{address[1]}")
             Connection(socket, address).start()
